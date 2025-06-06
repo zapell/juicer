@@ -7,7 +7,7 @@
 #SBATCH --error=error/es50mjuicer_%j.err
 #SBATCH --mail-user=zapell@umich.edu
 #SBATCH --mail-type=END,FAIL
-#SBATCH --mem=64G
+#SBATCH --mem=100G
 #SBATCH --time=12:00:00
 #SBATCH --profile=Task
 
@@ -47,5 +47,6 @@ bash $BASE_DIR/scripts/juicer.sh \
     -l standard \
     -A "hammou0" \
     -L "5:00:00" \
-    -Q "5:00:00"
+    -Q "5:00:00" \
+    -S "merge"
 

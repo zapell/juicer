@@ -866,7 +866,7 @@ CNTLINE`
 		#SBATCH -p $long_queue
 		#SBATCH -o $debugdir/merge-%j.out
 		#SBATCH -e $debugdir/merge-%j.err
-		#SBATCH --mem=10G
+		#SBATCH --mem=$alloc_mem
 		#SBATCH -t $long_queue_time
 		#SBATCH -c 1
 		#SBATCH --ntasks=1
@@ -894,7 +894,7 @@ MRGALL`
 		#SBATCH -p $long_queue
 		#SBATCH -o $debugdir/merge1-%j.out
 		#SBATCH -e $debugdir/merge1-%j.err
-		#SBATCH --mem=10G
+		#SBATCH --mem=$alloc_mem
 		#SBATCH -t $long_queue_time
 		#SBATCH -c 1
 		#SBATCH --ntasks=1
@@ -914,7 +914,7 @@ MRGALL1`
 		#SBATCH -p $long_queue
 		#SBATCH -o $debugdir/merge1-%j.out
 		#SBATCH -e $debugdir/merge1-%j.err
-		#SBATCH --mem=10G
+		#SBATCH --mem=$alloc_mem
 		#SBATCH -t $long_queue_time
 		#SBATCH -c 1
 		#SBATCH --ntasks=1
@@ -1027,9 +1027,9 @@ then
     
     if [ $isVoltron -eq 1 ]
     then  
-	sbatch_time="#SBATCH -t 10080"
+	sbatch_time="#SBATCH -t $long_queue_time"
     else
-	sbatch_time="#SBATCH -t 1440"
+	sbatch_time="#SBATCH -t $long_queue_time"
     fi
     if [ $isBCM -eq 1 ]
     then
@@ -1475,7 +1475,7 @@ FINCLN1`
 	#SBATCH -t $long_queue_time
 	#SBATCH -c $threadsHic
 	#SBATCH --ntasks=1
-	#SBATCH --mem=150G
+	#SBATCH --mem=100G
 	#SBATCH -J "${groupname}_hic"
 	${sbatch_waitstats}
 	$userstring			
@@ -1513,7 +1513,7 @@ HIC`
 	#SBATCH -t $long_queue_time
 	#SBATCH -c $threadsHic
 	#SBATCH --ntasks=1
-	#SBATCH --mem=150G
+	#SBATCH --mem=100G
 	#SBATCH -J "${groupname}_hic30"
 	${sbatch_waitstats30}
 	$userstring	
