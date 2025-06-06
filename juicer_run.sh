@@ -45,5 +45,7 @@ bash $BASE_DIR/scripts/juicer.sh \
     -d $FASTQ_DIR \
     -q standard \
     -l standard \
-    -A "hammou0"
+    -A "hammou0" \
+    -L "5:00:00" \
+    -Q "5:00:00"
 
