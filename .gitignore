@@ -1,0 +1,68 @@
+# Juicer output and temporary files
+*.hic
+*.merged_nodups.txt
+*.merged_nodups.txt.gz
+*.merged_nodups.txt.sort
+*.merged_nodups.txt.tmp
+*.merged_nodups.txt.index
+*.merged_nodups.txt.bak
+*.merged_nodups.txt.bai
+*.merged_nodups.txt.log
+*.merged_nodups.txt.stats
+*.merged_nodups.txt.deduped
+*.merged_nodups.txt.filtered
+*.merged_nodups.txt.split
+*.merged_nodups.txt.unmapped
+*.merged_nodups.txt.valid
+*.merged_nodups.txt.invalid
+*.merged_nodups.txt.unknown
+*.merged_nodups.txt.duplicates
+*.merged_nodups.txt.paired
+*.merged_nodups.txt.single
+
+# Juicer scripts and logs
+*.sh.e*
+*.sh.o*
+*.log
+*.out
+*.err
+*.jar
+
+# Temporary and intermediate files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+
+# Output directories
+/aligned/
+/splits/
+/intermediate/
+/fastq/
+/restriction_sites/
+/references/
+/output/
+/results/
+/tmp/
+/work/
+/scripts
+
+# Miscellaneous
+.DS_Store
+Thumbs.db
+._*
+*.sam
+*.bam
+*.bai
+*.bed
+*.gz
+*.zip
+
+# Ignore all except version-controlled scripts
+!*.sh
+!*.py
+!*.pl
+!*.R
+!*.md
+!*.txt
