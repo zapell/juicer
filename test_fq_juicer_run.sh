@@ -1,14 +1,14 @@
 #!/bin/bash
-#SBATCH --job-name=ES50m_juicer_%j
+#SBATCH --job-name=test_juicer_run_fq
 #SBATCH --account=hammou0
 #SBATCH --partition=standard
 #SBATCH --cpus-per-task=24
-#SBATCH --output=output/es50mjuicer_%j.out
-#SBATCH --error=error/es50mjuicer_%j.err
+#SBATCH --output=output/fq_encVZT_test_%j.out
+#SBATCH --error=error/fq_encVZT_test_%j.err
 #SBATCH --mail-user=zapell@umich.edu
 #SBATCH --mail-type=END,FAIL
-#SBATCH --mem=100G
-#SBATCH --time=10:00:00
+#SBATCH --mem=50G
+#SBATCH --time=12:00:00
 #SBATCH --profile=Task
 
 my_job_header
@@ -28,8 +28,8 @@ GENOME=mm10
 REFERENCE=$BASE_DIR/references/mm10_index/mm10_no_alt_analysis_set_ENCODE.fa
 CHROMSIZES=$BASE_DIR/references/mm10_no_alt.chrom.sizes_ENCSR425FOI.tsv
 SITES=$BASE_DIR/restriction_sites/mm10_GATC_GANTC.txt.gz
-FASTQ_DIR=$BASE_DIR/work/mm10_spermatid/ES50m
-OUTPUT_DIR=$BASE_DIR/work/mm10_spermatid/ES50m/output
+FASTQ_DIR=$BASE_DIR/work/test_fq
+OUTPUT_DIR=$BASE_DIR/work/test_fq/output
 
 
 #export USE_CP="1"
@@ -46,7 +46,6 @@ bash $BASE_DIR/scripts/juicer.sh \
     -q standard \
     -l standard \
     -A "hammou0" \
-    -L "5:00:00" \
-    -Q "5:00:00" \
-    -S "dedup"
+    -L "3:00:00" \
+    -Q "3:00:00" 
 
