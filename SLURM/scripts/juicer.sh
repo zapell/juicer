@@ -1357,9 +1357,9 @@ METH`
 	fi
 	if [ $assembly -eq 1 ]
         then
-		${juiceDir}/scripts/juicer_tools statistics $site_file $outputdir/inter.txt $outputdir/merged1.txt none
+		${juiceDir}/scripts/juicer_tools pre -s $outputdir/inter.txt $outputdir/merged1.txt none
 	else
-		${juiceDir}/scripts/juicer_tools statistics $site_file $outputdir/inter.txt $outputdir/merged1.txt $genomePath
+		${juiceDir}/scripts/juicer_tools pre -s $outputdir/inter.txt $outputdir/merged1.txt $genomePath
 	fi
 	date
 STATS`
@@ -1382,9 +1382,9 @@ STATS`
 	date
 	if [ $assembly -eq 1 ]
         then
-		${juiceDir}/scripts/juicer_tools statistics $site_file $outputdir/inter_30.txt $outputdir/merged30.txt none
+		${juiceDir}/scripts/juicer_tools pre -s $outputdir/inter_30.txt $outputdir/merged30.txt none
 	else
-	${juiceDir}/scripts/juicer_tools statistics $site_file $outputdir/inter_30.txt $outputdir/merged30.txt $genomePath
+	${juiceDir}/scripts/juicer_tools pre -s $outputdir/inter_30.txt $outputdir/merged30.txt $genomePath
 	fi
 	date
 STATS30`

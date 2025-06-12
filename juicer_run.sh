@@ -48,5 +48,5 @@ bash $BASE_DIR/scripts/juicer.sh \
     -A "hammou0" \
     -L "5:00:00" \
     -Q "5:00:00" \
-    -S "dedup"
+    -S "final"
 
