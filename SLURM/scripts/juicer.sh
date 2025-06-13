@@ -1335,6 +1335,27 @@ BAMRM`
 METH`
     fi
 
+	sbatch_wait00="${sbatch_wait2}:$jid"
+	jid=`sbatch <<- STATSPL | egrep -o -e "\b[0-9]+$"
+	#!/bin/bash -l
+	#SBATCH -p $long_queue
+	#SBATCH -o $debugdir/statspl-%j.out
+	#SBATCH -e $debugdir/statspl-%j.err
+	#SBATCH -t $long_queue_time
+	#SBATCH -c 1
+	#SBATCH --ntasks=1
+	#SBATCH --mem=25G
+	#SBATCH -J "${groupname}_statspl"
+	${sbatch_wait000}
+	$userstring
+
+	date
+	perl ${juiceDir}/scripts/statistics.pl -q 1 -o $outputdir/inter.txt -s $site_file -l $ligation $outputdir/merged1.txt
+	perl ${juiceDir}/scripts/statistics.pl -q 30 -o $outputdir/inter_30.txt -s $site_file -l $ligation $outputdir/merged30.txt
+	date
+STATSPL`
+
+
     sbatch_wait00="${sbatch_wait2}:$jid"
     jid=`sbatch <<- STATS | egrep -o -e "\b[0-9]+$"
 	#!/bin/bash -l
@@ -1357,9 +1378,9 @@ METH`
 	fi
 	if [ $assembly -eq 1 ]
         then
-		${juiceDir}/scripts/juicer_tools pre -s $outputdir/inter.txt $outputdir/merged1.txt none
+		${juiceDir}/scripts/juicer_tools statistics $outputdir/interOLD.txt $outputdir/merged1.txt none
 	else
-		${juiceDir}/scripts/juicer_tools pre -s $outputdir/inter.txt $outputdir/merged1.txt $genomePath
+		${juiceDir}/scripts/juicer_tools statistics $outputdir/interOLD.txt $outputdir/merged1.txt $genomePath
 	fi
 	date
 STATS`
@@ -1382,9 +1403,9 @@ STATS`
 	date
 	if [ $assembly -eq 1 ]
         then
-		${juiceDir}/scripts/juicer_tools pre -s $outputdir/inter_30.txt $outputdir/merged30.txt none
+		${juiceDir}/scripts/juicer_tools statistics $outputdir/interOLD_30.txt $outputdir/merged30.txt none
 	else
-	${juiceDir}/scripts/juicer_tools pre -s $outputdir/inter_30.txt $outputdir/merged30.txt $genomePath
+	${juiceDir}/scripts/juicer_tools statistics $outputdir/interOLD_30.txt $outputdir/merged30.txt $genomePath
 	fi
 	date
 STATS30`
@@ -1499,7 +1520,7 @@ FINCLN1`
 	fi
 
 	time ${juiceDir}/scripts/juicer_tools pre -n -s $outputdir/inter.txt -g $outputdir/inter_hists.m -q 1 $resstr $fragstr $threadHicString $outputdir/merged1.txt $outputdir/inter.hic $genomePath
-	time ${juiceDir}/scripts/juicer_tools addNorm $threadNormString ${outputdir}/inter.hic 
+	time ${juiceDir}/scripts/juicer_tools addNorm -j 24 -k SCALE,VC,VC_SQRT $threadNormString ${outputdir}/inter.hic 
 	rm -Rf ${outputdir}"/HIC_tmp"
 	date
 HIC`
@@ -1536,7 +1557,7 @@ HIC`
 	fi
 
 	time ${juiceDir}/scripts/juicer_tools pre -n -s $outputdir/inter_30.txt -g $outputdir/inter_30_hists.m -q 30 $resstr $fragstr $threadHic30String $outputdir/merged30.txt $outputdir/inter_30.hic $genomePath
-	time ${juiceDir}/scripts/juicer_tools addNorm $threadNormString ${outputdir}/inter_30.hic
+	time ${juiceDir}/scripts/juicer_tools addNorm -j 24 -k SCALE,VC,VC_SQRT $threadNormString ${outputdir}/inter_30.hic
 	rm -Rf ${outputdir}"/HIC30_tmp"
 	date
 HIC30`

@@ -1,14 +1,14 @@
 #!/bin/bash
-#SBATCH --job-name=test_stats_juicer_run_Hic
+#SBATCH --job-name=LS50m_juicer
 #SBATCH --account=hammou0
 #SBATCH --partition=standard
 #SBATCH --cpus-per-task=24
-#SBATCH --output=output/encVZT_test_stats_%j.out
-#SBATCH --error=error/encVZT_test_stats_%j.err
+#SBATCH --output=output/ls50mjuicer_%j.out
+#SBATCH --error=error/ls50mjuicer_%j.err
 #SBATCH --mail-user=zapell@umich.edu
 #SBATCH --mail-type=END,FAIL
-#SBATCH --mem=25G
-#SBATCH --time=2:00:00
+#SBATCH --mem=100G
+#SBATCH --time=10:00:00
 #SBATCH --profile=Task
 
 my_job_header
@@ -28,11 +28,10 @@ GENOME=mm10
 REFERENCE=$BASE_DIR/references/mm10_index/mm10_no_alt_analysis_set_ENCODE.fa
 CHROMSIZES=$BASE_DIR/references/mm10_no_alt.chrom.sizes_ENCSR425FOI.tsv
 SITES=$BASE_DIR/restriction_sites/mm10_GATC_GANTC.txt.gz
-FASTQ_DIR=$BASE_DIR/work/test_stats
-OUTPUT_DIR=$BASE_DIR/work/test_stats/output
+FASTQ_DIR=$BASE_DIR/work/mm10_spermatid/LS50m
+OUTPUT_DIR=$BASE_DIR/work/mm10_spermatid/LS50m/output
 
 
-#export USE_CP="1"
 
 # Run Juicer
 bash $BASE_DIR/scripts/juicer.sh \
@@ -42,11 +41,9 @@ bash $BASE_DIR/scripts/juicer.sh \
     -y $SITES \
     -D $BASE_DIR \
     -t 24 \
-    -T 24 \
     -d $FASTQ_DIR \
     -q standard \
     -l standard \
     -A "hammou0" \
-    -L "3:00:00" \
-    -Q "3:00:00" \
-    -S "final"
+    -L "8:00:00" \
+    -Q "5:00:00" 
