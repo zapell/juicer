@@ -1520,7 +1520,7 @@ FINCLN1`
 	fi
 
 	time ${juiceDir}/scripts/juicer_tools pre -n -s $outputdir/inter.txt -g $outputdir/inter_hists.m -q 1 $resstr $fragstr $threadHicString $outputdir/merged1.txt $outputdir/inter.hic $genomePath
-	time ${juiceDir}/scripts/juicer_tools addNorm -j 24 -k SCALE,VC,VC_SQRT $threadNormString ${outputdir}/inter.hic 
+	time ${juiceDir}/scripts/juicer_tools addNorm -k SCALE,VC,VC_SQRT $threadNormString ${outputdir}/inter.hic 
 	rm -Rf ${outputdir}"/HIC_tmp"
 	date
 HIC`
@@ -1557,7 +1557,7 @@ HIC`
 	fi
 
 	time ${juiceDir}/scripts/juicer_tools pre -n -s $outputdir/inter_30.txt -g $outputdir/inter_30_hists.m -q 30 $resstr $fragstr $threadHic30String $outputdir/merged30.txt $outputdir/inter_30.hic $genomePath
-	time ${juiceDir}/scripts/juicer_tools addNorm -j 24 -k SCALE,VC,VC_SQRT $threadNormString ${outputdir}/inter_30.hic
+	time ${juiceDir}/scripts/juicer_tools addNorm -k SCALE,VC,VC_SQRT $threadNormString ${outputdir}/inter_30.hic
 	rm -Rf ${outputdir}"/HIC30_tmp"
 	date
 HIC30`
