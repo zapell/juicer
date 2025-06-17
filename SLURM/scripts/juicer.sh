@@ -455,7 +455,7 @@ else
 fi
 
 alloc_mem=$(($threads * 8000))
-large_mem=$SLURM_MEM_PER_NODE
+large_mem="1000G"
 
 # caps memory
 # add partition check to cap memory for standard queue

@@ -1,13 +1,13 @@
 #!/bin/bash
 #SBATCH --job-name=ES_juicer_full
 #SBATCH --account=hammou0
-#SBATCH --partition=largemem
+#SBATCH --partition=standard
 #SBATCH --cpus-per-task=36
 #SBATCH --output=output/esfull_juicer_%j.out
 #SBATCH --error=error/esfull_juicer_%j.err
 #SBATCH --mail-user=zapell@umich.edu
 #SBATCH --mail-type=END,FAIL
-#SBATCH --mem=1000G
+#SBATCH --mem=180G
 #SBATCH --time=96:00:00
 #SBATCH --profile=Task
 
