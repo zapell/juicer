@@ -455,11 +455,15 @@ else
 fi
 
 alloc_mem=$(($threads * 8000))
+large_mem=$SLURM_MEM_PER_NODE
 
-if [ $alloc_mem -gt 80000 ]
+# caps memory
+# add partition check to cap memory for standard queue
+if [ $alloc_mem -gt 180000 ]
 then
-    alloc_mem=80000
+	alloc_mem=180000
 fi
+
 
 if [ $isBCM -eq 1 ] || [ $isRice -eq 1 ]
 then
@@ -578,6 +582,10 @@ else
     userstring="#SBATCH -A $user"
 fi
 
+# add mail user and type
+mailstring="#SBATCH --mail-user=zapell@umich.edu
+#SBATCH --mail-type=END,FAIL"
+
 # Add header containing command executed and timestamp
 if [ "$methylation" = 1 ]
 then
@@ -588,6 +596,7 @@ fi
 jid=`sbatch <<- HEADER | egrep -o -e "\b[0-9]+$"
 	#!/bin/bash -l 
 	$userstring
+	$mailstring
 	$queuestring
 	#SBATCH -t 2
 	#SBATCH -c 1
@@ -669,7 +678,8 @@ then
 			#SBATCH -o $debugdir/split-%j.out
 			#SBATCH -e $debugdir/split-%j.err
 			#SBATCH -J "${groupname}_split_${i}"
-			$userstring			
+			$userstring
+			$mailstring		
 			date
 			echo "Split file: $filename"
 			split -a 3 -l $splitsize -d --additional-suffix=.fastq $i $splitdir/$filename
@@ -685,7 +695,8 @@ SPLITEND`
 			#SBATCH -o $debugdir/split-%j.out
 			#SBATCH -e $debugdir/split-%j.err
 			#SBATCH -J "${groupname}_split_${i}"
-			$userstring			
+			$userstring	
+			$mailstring		
 			date
 			echo "Split file: $filename"
 			zcat $i | split -a 3 -l $splitsize -d --additional-suffix=.fastq - $splitdir/$filename
@@ -769,7 +780,8 @@ SPLITEND`
 		#SBATCH -e $debugdir/count_ligation-%j.err
 		#SBATCH -J "${groupname}_${jname}_Count_Ligation"
 		#SBATCH --mem=5G
-		$userstring			
+		$userstring	
+		$mailstring		
 
 		date
 		export usegzip=${usegzip}; export name=${name}; export name1=${name1}; export name2=${name2}; export ext=${ext}; export ligation=${ligation}; export singleend=${singleend}; ${juiceDir}/scripts/countligations.sh
@@ -783,14 +795,15 @@ CNTLIG`
 		$queuestring
 		#SBATCH -o $debugdir/align1-%j.out
 		#SBATCH -e $debugdir/align1-%j.err
-		#SBATCH -t $queue_time
+		#SBATCH -t $long_queue_time
 		#SBATCH -n 1
 		#SBATCH -c $threads
 		#SBATCH --ntasks=1
 		#SBATCH --mem=$alloc_mem
 		#SBATCH -J "${groupname}_align1_${jname}"
 		#SBATCH --threads-per-core=1		
-		$userstring			
+		$userstring		
+		$mailstring	
 
 		${load_bwa}
 		# Align reads
@@ -845,9 +858,11 @@ ALGNR1`
 		#SBATCH -e $debugdir/count_line-%j.err
 		#SBATCH -J "${groupname}_${jname}_Count_Line"
 		#SBATCH --mem=5G
+		$userstring		
+		$mailstring	
 		${load_awk}
 		${load_samtools}
-		$userstring			
+		
 
 		date
 		echo -ne "0 " > ${name}${ext}_norm.txt.res.txt
@@ -866,14 +881,15 @@ CNTLINE`
 		#SBATCH -p $long_queue
 		#SBATCH -o $debugdir/merge-%j.out
 		#SBATCH -e $debugdir/merge-%j.err
-		#SBATCH --mem=$alloc_mem
+		#SBATCH --mem=$large_mem
 		#SBATCH -t $long_queue_time
 		#SBATCH -c 1
 		#SBATCH --ntasks=1
 		#SBATCH -d $dependalign
 		#SBATCH -J "${groupname}_merge_${jname}"
-                #SBATCH --threads-per-core=1
-				$userstring
+		#SBATCH --threads-per-core=1
+		$userstring
+		$mailstring	
 		${load_awk}
 
 		date
@@ -894,7 +910,7 @@ MRGALL`
 		#SBATCH -p $long_queue
 		#SBATCH -o $debugdir/merge1-%j.out
 		#SBATCH -e $debugdir/merge1-%j.err
-		#SBATCH --mem=$alloc_mem
+		#SBATCH --mem=$large_mem
 		#SBATCH -t $long_queue_time
 		#SBATCH -c 1
 		#SBATCH --ntasks=1
@@ -914,14 +930,15 @@ MRGALL1`
 		#SBATCH -p $long_queue
 		#SBATCH -o $debugdir/merge1-%j.out
 		#SBATCH -e $debugdir/merge1-%j.err
-		#SBATCH --mem=$alloc_mem
+		#SBATCH --mem=$large_mem
 		#SBATCH -t $long_queue_time
 		#SBATCH -c 1
 		#SBATCH --ntasks=1
 		#SBATCH -d $dependalign
 		#SBATCH -J "${groupname}_merge_${jname}"
-                #SBATCH --threads-per-core=1
-				$userstring
+ 		#SBATCH --threads-per-core=1
+		$userstring
+		$mailstring	
 		${load_awk}
 		#time awk -v maxcount=1000000 -f $juiceDir/scripts/calculate_insert_size.awk $name$ext.sam > $name$ext.insert_size
 		#will need to combine chimeric_sam and adjust_insert_size 
@@ -933,7 +950,7 @@ MRGALL1`
 		#SBATCH -p $long_queue
 		#SBATCH -o $debugdir/merge2-%j.out
 		#SBATCH -e $debugdir/merge2-%j.err
-		#SBATCH --mem=10G
+		#SBATCH --mem=$alloc_mem
 		#SBATCH -t $long_queue_time
 		#SBATCH -c 1
 		#SBATCH --ntasks=1
@@ -954,7 +971,7 @@ MRGALL3`
 #SBATCH -p $long_queue
 #SBATCH -o $debugdir/mergesort-%j.out
 #SBATCH -e $debugdir/mergesort-%j.err
-#SBATCH --mem=100G
+#SBATCH --mem=$large_mem
 #SBATCH -t $long_queue_time
 #SBATCH -c $sortthreads
 #SBATCH --ntasks=1
@@ -962,8 +979,9 @@ MRGALL3`
 #SBATCH -J "${groupname}_mergesort_${jname}"
 #SBATCH --threads-per-core=1 
 $userstring
+$mailstring	
 ${load_samtools}
-#we should probably set the -m based on memory / num of threads
+# we should probably set the -m based on memory / num of threads
 if time samtools sort -t cb -n -O SAM -@ $sortthreads -l 0 -m 12G $name$ext.sam3 >  ${name}${ext}.sam
 then
    rm -f $name$ext.sam2 $name$ext.sam3
@@ -997,7 +1015,8 @@ MRGALL2`
 		#SBATCH -p $queue
 		#SBATCH -J "${groupname}_check"
 		#SBATCH -d $dependmerge
-				$userstring			
+		$userstring	
+		$mailstring			
 
 		date
 		echo "Checking $f"
@@ -1037,7 +1056,7 @@ then
 	sbatch_mem_alloc="#SBATCH --mem=80G"
     else
 	sbatch_cpu_alloc="#SBATCH -c 8"
-	sbatch_mem_alloc="#SBATCH --mem=64G"
+	sbatch_mem_alloc="#SBATCH --mem=$large_mem"
     fi
 
     jid=`sbatch <<- EOF
@@ -1050,7 +1069,8 @@ then
 		${sbatch_cpu_alloc}
 		#SBATCH -J "${groupname}_fragmerge"
 		${sbatch_wait}
-				$userstring			
+		$userstring	
+		$mailstring			
 
 		date
 		if [ -f "${errorfile}" ]
@@ -1102,7 +1122,8 @@ then
 	#SBATCH --ntasks=1
 	#SBATCH -J "${groupname}_dedup_guard"
 	${sbatch_wait}
-	$userstring			
+	$userstring
+	$mailstring				
 
 	date
 DEDUPGUARD`
@@ -1122,6 +1143,7 @@ DEDUPGUARD`
 	#SBATCH -J "${groupname}_dedup"
 	${sbatch_wait}
 	$userstring
+	$mailstring	
 	
 	${load_awk}
 	date
@@ -1159,7 +1181,8 @@ DEDUP`
 	#SBATCH --ntasks=1
 	#SBATCH -J "${groupname}_post_dedup"
 	#SBATCH -d ${dependguard}
-	$userstring			
+	$userstring	
+	$mailstring			
 
 	date
 	rm -Rf $tmpdir;
@@ -1196,7 +1219,8 @@ if [ -z $postproc ] && [ -z $final ]
 	#SBATCH --mem-per-cpu=8G
 	#SBATCH -J "${groupname}_dupcheck"
 	${sbatch_wait}
-	$userstring			
+	$userstring		
+	$mailstring		
 	${load_awk}
 	date 
 	wc -l ${outputdir}/merged_sort.sam |  awk '{printf("%s ", \\\$1)}' > $debugdir/dupcheck-${groupname}
@@ -1218,6 +1242,7 @@ DUPCHECK`
 	#SBATCH -J "${groupname}_merged1"
 	${sbatch_wait}
 	$userstring
+	$mailstring	
 	${load_samtools}
 
 	samtools view -F 1024 -O sam $sthreadstring ${outputdir}/merged_dedup.sam | awk -v mapq=1 -f ${juiceDir}/scripts/sam_to_pre.awk > ${outputdir}/merged1.txt
@@ -1237,6 +1262,7 @@ MERGED1`
 	#SBATCH -J "${groupname}_merged30"
 	${sbatch_wait}
 	$userstring
+	$mailstring	
 	${load_samtools}
 
 	samtools view -F 1024 -O sam $sthreadstring ${outputdir}/merged_dedup.sam | awk -v mapq=30 -f ${juiceDir}/scripts/sam_to_pre.awk > ${outputdir}/merged30.txt 
@@ -1258,6 +1284,7 @@ MERGED30`
 	#SBATCH -J "${groupname}_prestats"
 	${sbatch_wait}
 	$userstring
+	$mailstring	
 	${load_awk}
         date
         ${load_java}
@@ -1325,6 +1352,7 @@ BAMRM`
 		#SBATCH -J "${groupname}_meth"
 		#SBATCH -d afterok:$jid
 		$userstring
+		$mailstring	
 		${load_samtools}                            
 		export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/gpfs0/home/neva/lib
 		samtools sort $sthreadstring ${outputdir}/merged_dedup.bam > ${outputdir}/merged_dedup_sort.bam
@@ -1369,6 +1397,7 @@ STATSPL`
 	#SBATCH -J "${groupname}_stats"
 	${sbatch_wait000}
 	$userstring			
+	$mailstring	
 
 	date
 	if [ -f "${errorfile}" ]
@@ -1399,6 +1428,7 @@ STATS`
 	#SBATCH -J "${groupname}_stats30"
 	${sbatch_wait00}
 	$userstring
+	$mailstring	
 
 	date
 	if [ $assembly -eq 1 ]
@@ -1439,6 +1469,7 @@ then
 	#SBATCH -J "${groupname}_mnd"     
 	${sbatch_wait1}
 	$userstring	   
+	$mailstring	
 	${load_samtools}
 	date
 
@@ -1461,6 +1492,7 @@ MND`
         #SBATCH --mail-type=END,FAIL
 	${sbatch_wait1}
 	$userstring	   
+	$mailstring	
 	date
 	export splitdir=${splitdir}; export outputdir=${outputdir}; export early=1; 
 	if ${juiceDir}/scripts/check.sh 
@@ -1497,10 +1529,11 @@ FINCLN1`
 	#SBATCH -t $long_queue_time
 	#SBATCH -c $threadsHic
 	#SBATCH --ntasks=1
-	#SBATCH --mem=100G
+	#SBATCH --mem=$large_mem
 	#SBATCH -J "${groupname}_hic"
 	${sbatch_waitstats}
 	$userstring			
+	$mailstring	
 
 	${load_java}
 	export IBM_JAVA_OPTIONS="-Xmx150000m -Xgcthreads1"
@@ -1535,10 +1568,11 @@ HIC`
 	#SBATCH -t $long_queue_time
 	#SBATCH -c $threadsHic
 	#SBATCH --ntasks=1
-	#SBATCH --mem=100G
+	#SBATCH --mem=$large_mem
 	#SBATCH -J "${groupname}_hic30"
 	${sbatch_waitstats30}
 	$userstring	
+	$mailstring	
 
 	${load_java}
 	export IBM_JAVA_OPTIONS="-Xmx150000m -Xgcthreads1"
@@ -1588,6 +1622,7 @@ then
 	#SBATCH -J "${groupname}_hiccups_wrap"
 	${sbatch_wait}
 	$userstring
+	$mailstring	
 
 	${load_gpu}
 	echo "load: $load_gpu"
@@ -1620,7 +1655,8 @@ then
 	#SBATCH --ntasks=1
 	#SBATCH -J "${groupname}_arrowhead_wrap"
 	${sbatch_wait}
-	$userstring			
+	$userstring		
+	$mailstring		
 
 	${load_java}
 	date
@@ -1650,6 +1686,7 @@ then
 	#SBATCH -J "${groupname}_qc_apa"
 	${sbatch_wait}
 	$userstring
+	$mailstring	
 	${load_java}
 	date
 	export IBM_JAVA_OPTIONS="-Xmx4000m -Xgcthreads1"                                                                    
@@ -1670,7 +1707,8 @@ jid=`sbatch <<- FINCLN1 | egrep -o -e "\b[0-9]+$"
 	#SBATCH --ntasks=1
 	#SBATCH -J "${groupname}_prep_done"
 	$dependarrows
-	$userstring			
+	$userstring	
+	$mailstring			
 
 	date
 	export splitdir=${splitdir}
