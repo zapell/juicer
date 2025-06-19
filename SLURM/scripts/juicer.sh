@@ -790,12 +790,14 @@ CNTLIG`
 	    dependcount="$jid"
 
 	    # align fastqs
+		# done in about 3hrs on standard for full data
+		# done in standard mem
 	    jid=`sbatch <<- ALGNR1 | egrep -o -e "\b[0-9]+$"
 		#!/bin/bash -l
 		$queuestring
 		#SBATCH -o $debugdir/align1-%j.out
 		#SBATCH -e $debugdir/align1-%j.err
-		#SBATCH -t $long_queue_time
+		#SBATCH -t $queue_time
 		#SBATCH -n 1
 		#SBATCH -c $threads
 		#SBATCH --ntasks=1
@@ -927,11 +929,11 @@ MRGALL1`
 	    else
 		jid=`sbatch <<- MRGALL1 | egrep -o -e "\b[0-9]+$"
 		#!/bin/bash -l
-		#SBATCH -p $long_queue
+		#SBATCH -p $queue
 		#SBATCH -o $debugdir/merge1-%j.out
 		#SBATCH -e $debugdir/merge1-%j.err
 		#SBATCH --mem=$large_mem
-		#SBATCH -t $long_queue_time
+		#SBATCH -t $queue_time
 		#SBATCH -c 1
 		#SBATCH --ntasks=1
 		#SBATCH -d $dependalign
@@ -947,11 +949,11 @@ MRGALL1`
 		dependalign="afterok:$jid"
 		jid=`sbatch <<- MRGALL3 | egrep -o -e "\b[0-9]+$"
 		#!/bin/bash -l
-		#SBATCH -p $long_queue
+		#SBATCH -p $queue
 		#SBATCH -o $debugdir/merge2-%j.out
 		#SBATCH -e $debugdir/merge2-%j.err
 		#SBATCH --mem=$alloc_mem
-		#SBATCH -t $long_queue_time
+		#SBATCH -t $queue_time
 		#SBATCH -c 1
 		#SBATCH --ntasks=1
 		#SBATCH -d $dependalign
